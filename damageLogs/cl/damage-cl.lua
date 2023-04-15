@@ -68,32 +68,55 @@ parts = {
 }
 
 
-local lastBoneCoords = nil
-local playerId = PlayerId()
-local playerName = GetPlayerName(playerId)
-
+ local lastBone = nil
 Citizen.CreateThread(function()
-while true do
-Citizen.Wait(100)
-local foundLastDamagedBone, lastDamagedBoneCoords = GetPedLastDamageBoneCoords(PlayerPedId())
- if foundLastDamagedBone and lastDamagedBoneCoords ~= lastBoneCoords then
-    local remainingHP = GetEntityHealth(PlayerPedId())
-    local remainingAR = GetPedArmour(PlayerPedId())
-    local damagedBone = parts[lastDamagedBoneCoords.bone]
-    if damagedBone then
-        local message = string.format("%s [Damage Area] `%s` [Remaining HP] `%d` [Remaining Armor] `%d`", playerName, damagedBone, remainingHP, remainingAR)
-        
-        if remainingHP <= 0 or -100 then
-            message = string.format("%s [Dead] `%s` [Remaining Armor] `%d`", playerName, damagedBone, remainingAR)
-        end
-        TriggerServerEvent('BasicshitLogging', message)
-        Citizen.Wait(0)
-        lastBoneCoords = lastDamagedBoneCoords
-    end
-    end
-    end
-end)
+  while true do
+      Citizen.Wait(100)
+      local FoundLastDamagedBone, LastDamagedBone = GetPedLastDamageBone(PlayerPedId())
+      local remainingHP = GetEntityHealth(PlayerPedId())
+      local remainingAR = GetPedArmour(PlayerPedId())
+      local message = nil
+      local attacker, victim = nil, nil
+      local playerId = PlayerId()
 
+      for i=0, 255 do
+          if NetworkIsPlayerActive(i) and GetPlayerPed(i) ~= PlayerPedId() then
+              local ped = GetPlayerPed(i)
+              local coords = GetEntityCoords(PlayerPedId())
+              if #(coords - GetEntityCoords(ped)) < 5.0 then
+                  local damage = GetPedLastDamageBone(ped)
+                  if damage ~= -1 then
+                      victim = ped
+                      attacker = GetPlayerServerId(i)
+                      break
+                  end
+              end
+          end
+      end
+
+      local playerName = GetPlayerName(playerId)
+
+      if FoundLastDamagedBone and LastDamagedBone ~= lastBone then
+          local DamagedBone = GetKeyOfValue(parts, LastDamagedBone)
+          if DamagedBone then
+              if victim and DoesEntityExist(victim) and IsEntityAPed(victim) then
+                  local victimName = GetEntityTypeName(victim)
+                  message = string.format("%s [%s] `%s` [Damage Area] `%s` [Remaining HP] `%d` [Remaining Armor] `%d`", playerName, victimName, attacker, DamagedBone, remainingHP, remainingAR)
+              else
+                  message = string.format("%s [Damage Area] `%s` [Remaining HP] `%d` [Remaining Armor] `%d`", playerName, DamagedBone, remainingHP, remainingAR)
+              end
+
+              if remainingHP <= -100 or remainingHP == 0 then 
+                  message = string.format("%s [Dead] `%s` [Remaining Armor] `%d`", playerName, DamagedBone, remainingAR)
+              end
+
+              TriggerServerEvent('asd', message)
+              Citizen.Wait(0)
+              lastBone = LastDamagedBone
+          end
+      end
+  end
+end)
 
 function GetKeyOfValue(Table, SearchedFor)
   for Key, Value in pairs(Table) do
