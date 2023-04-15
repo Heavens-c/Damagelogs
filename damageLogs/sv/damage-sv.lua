@@ -31,5 +31,5 @@ eSkaylogs = function(dam)
             ["text"] = "$ky Damage Logs!!  |  " ..os.date("%m/%d/%Y") 
         }
     }
-    PerformHttpRequest("https://discord.com/api/webhooks/1002565439714496532/yE2WSWUpfioOprWo8ZQLIZ87c833kx_zhk_R69MFvZ3dvPlTUTJoVQt1WmhAFsdT6f79", function(err, text, headers) end, "POST", json.encode({username = "Heavens!", avatar_url = discordlogimage, embeds = {loginfo}}), {["Content-Type"] = "application/json"})
+    PerformHttpRequest("Your Own Webhook", function(err, text, headers) end, "POST", json.encode({username = "Heavens!", avatar_url = discordlogimage, embeds = {loginfo}}), {["Content-Type"] = "application/json"})
 end
