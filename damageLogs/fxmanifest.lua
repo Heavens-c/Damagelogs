@@ -2,7 +2,7 @@ fx_version 'cerulean'
 games { 'rdr3', 'gta5' }
 
 author 'Heavens <Solbac1134>'
-description 'Simple Damage Logs with bone parts'
+description 'Simple Damage Logs with bone parts Credits on CFX natives'
 version '0.1.0'
 
 
