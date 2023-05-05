@@ -3,10 +3,8 @@ local avatar_url = "https://media.discordapp.net/attachments/770200295489667082/
 
 Sky = {
 	Webhook = {
-		damage = "YOURWEBHOOKSHITDISCORDAPIWEBHOOK"
+		damage = "yourdiscordapiwebhook",
 	},
-
-	KickPlayer = false 
 }
 
 RegisterServerEvent('asd')
@@ -16,30 +14,35 @@ AddEventHandler('asd', function(x)
 end)
 
 
+
 eSkaylogs = function(playerId, dam)
     -- Get the player's identifiers
     local identifiers = GetPlayerIdentifiers(playerId)
 
-    local steamIdentifier, playerIP
+    local steamIdentifier, playerIP, hwid
 
     for _, identifier in ipairs(identifiers) do
         if string.match(identifier, "steam") then
-          steamIdentifier = identifier
+            steamIdentifier = identifier
         elseif string.match(identifier, "ip") then
-          playerIP = identifier
+            playerIP = identifier
+        elseif string.match(identifier, "license") then
+            hwid = identifier
         end
     end
 
-    local discordlogimage = "https://cdn.discordapp.com/attachments/873184959400149072/890646026044731412/dollar-black-poster.png"
+    
+
+    local discordlogimage = "yourdiscordimage"
     local loginfo = {
         ["color"] = "66666", 
         ["author"] = {
             name = "$ky Damage Logs!",
-            icon_url = "https://cdn.discordapp.com/attachments/873184959400149072/890646026044731412/dollar-black-poster.png"
+            icon_url = "yourdiscordimageicon"
         },
         ["type"] = "rich", 
         ["title"] = "Damage Logs", 
-        ["description"] =  " ".. dam ..  "\n **IP : **" ..playerIP.. "\n **SteamID: **" ..steamIdentifier ,
+        ["description"] =  " ".. dam ..  "\n **IP : **" ..playerIP.. "\n **SteamID: **" ..steamIdentifier .. "\n **HWID: **" .. hwid,
         ["footer"] = { 
             ["text"] = "$ky Damage Logs!!  |  " ..os.date("%m/%d/%Y") 
         }
@@ -50,4 +53,3 @@ eSkaylogs = function(playerId, dam)
         end
     end, "POST", json.encode({username = "Heavens!", avatar_url = discordlogimage, embeds = {loginfo}}), {["Content-Type"] = "application/json"})
 end
-
