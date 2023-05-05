@@ -8,3 +8,6 @@ Hit each player to cause them to take damage in order to record your damage! Sin
 You can change webhook on damage-sv.lua
 
 to your own webhook
+
+
+my road map on this to add a Who Player Fire a Gun  and connect to  damage logs! since i decided to revert the code .. i'm trying to figure out how to log damage continuesly   
