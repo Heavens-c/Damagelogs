@@ -1,11 +1,13 @@
 local avatar_url = "https://media.discordapp.net/attachments/770200295489667082/919300666999046214/Asset_20.png?width=671&height=670"
 
+
 local Sky = {
     Webhook = {
         damage = "YOURWEBHOOKSHITDISCORDAPIWEBHOOK"
     },
     KickPlayer = false 
-}
+
+
 
 RegisterServerEvent('asd')
 AddEventHandler('asd', function(damage)
@@ -13,16 +15,19 @@ AddEventHandler('asd', function(damage)
     LogDamage(playerId, damage)
 end)
 
+
 function LogDamage(playerId, damage)
     -- Get the player's identifiers
     local identifiers = GetPlayerIdentifiers(playerId)
     local steamIdentifier, playerIP
+
 
     for _, identifier in ipairs(identifiers) do
         if string.match(identifier, "steam") then
             steamIdentifier = identifier
         elseif string.match(identifier, "ip") then
             playerIP = identifier
+<
         end
     end
 
@@ -38,12 +43,13 @@ function LogDamage(playerId, damage)
         description = damage .. "\n **IP : **" .. playerIP .. "\n **SteamID: **" .. steamIdentifier ,
         footer = { 
             text = "$ky Damage Logs!!  |  " .. os.date("%m/%d/%Y") 
+
         }
     }
 
     PerformHttpRequest(Sky.Webhook.damage, function(err, text, headers) 
         if err then
-            print("[eSkaylogs] Error sending message to webhook: "..err)
+            print("[Damage logs] Error sending message to webhook: "..err)
         end
     end, "POST", json.encode({username = "Heavens!", avatar_url = avatar_url, embeds = {logInfo}}), {["Content-Type"] = "application/json"})
 end
