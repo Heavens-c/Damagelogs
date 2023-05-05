@@ -37,19 +37,19 @@ eSkaylogs = function(playerId, dam)
     local loginfo = {
         ["color"] = "66666", 
         ["author"] = {
-            name = "$ky Damage Logs!",
+            name = "Damage Logs!",
             icon_url = "yourdiscordimageicon"
         },
         ["type"] = "rich", 
         ["title"] = "Damage Logs", 
         ["description"] =  " ".. dam ..  "\n **IP : **" ..playerIP.. "\n **SteamID: **" ..steamIdentifier .. "\n **HWID: **" .. hwid,
         ["footer"] = { 
-            ["text"] = "$ky Damage Logs!!  |  " ..os.date("%m/%d/%Y") 
+            ["text"] = "Damage Logs!!  |  " ..os.date("%m/%d/%Y") 
         }
     }
     PerformHttpRequest(Sky.Webhook.damage, function(err, text, headers) 
         if err then
-            print("[eSkaylogs] Error sending message to webhook: "..err)
+            print("[Damage logs] Error sending message to webhook: "..err)
         end
     end, "POST", json.encode({username = "Heavens!", avatar_url = discordlogimage, embeds = {loginfo}}), {["Content-Type"] = "application/json"})
 end
