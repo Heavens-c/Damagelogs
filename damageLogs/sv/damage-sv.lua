@@ -6,7 +6,7 @@ local Sky = {
         damage = "YOURWEBHOOKSHITDISCORDAPIWEBHOOK"
     },
     KickPlayer = false 
-
+}
 
 
 RegisterServerEvent('asd')
@@ -27,7 +27,6 @@ function LogDamage(playerId, damage)
             steamIdentifier = identifier
         elseif string.match(identifier, "ip") then
             playerIP = identifier
-<
         end
     end
 
