@@ -167,15 +167,6 @@ function GetKeyOfValue(Table, SearchedFor)
   return nil
 end
 
-function GetKeyOfValue(Table, SearchedFor)
-  for Key, Value in pairs(Table) do
-      if SearchedFor == Value then
-          return Key
-      end
-  end
-  return nil
-end
-
  --_Remove Dependency of framewrok trying to be a Standalone SHIT?
 -- ESX = nil
 
