@@ -1,9 +1,4 @@
-local Sky = {
-    Webhook = {
-        damage = "YOURWEBHOOKSHITDISCORDAPIWEBHOOK"
-    },
-    KickPlayer = false 
-}
+  local webhook = "YOUR_WEBHOOK_URL" -- Replace this with your actual webhook URL
 
 function LogDamage(playerId, damage)
     -- Get the player's identifiers
@@ -58,7 +53,7 @@ function LogDamage(playerId, damage)
                 }
             }
 
-            PerformHttpRequest(Sky.Webhook.damage, function(err, text, headers) 
+            PerformHttpRequest(webhook, function(err, text, headers) 
                 if err then
                     print("[Damage logs] Error sending message to webhook: "..err)
                 end
@@ -80,8 +75,8 @@ function LogDamage(playerId, damage)
                 text = "Damage Logs!!  |  " .. os.date("%m/%d/%Y") 
             }
         }
-
-        PerformHttpRequest(Sky.Webhook.damage, function(err, text, headers) 
+        
+        PerformHttpRequest(webhook, function(err, text, headers) 
             if err then
                 print("[Damage logs] Error sending message to webhook: "..err)
             end
