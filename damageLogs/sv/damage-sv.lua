@@ -1,3 +1,10 @@
+local Sky = {
+    Webhook = {
+        damage = "YOURWEBHOOKSHITDISCORDAPIWEBHOOK"
+    },
+    KickPlayer = false 
+}
+
 function LogDamage(playerId, damage)
     -- Get the player's identifiers
     local identifiers = GetPlayerIdentifiers(playerId)
