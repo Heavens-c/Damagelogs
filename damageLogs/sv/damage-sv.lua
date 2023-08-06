@@ -1,48 +1,36 @@
-local avatar_url = "https://media.discordapp.net/attachments/770200295489667082/919300666999046214/Asset_20.png?width=671&height=670"
-
-
-local Sky = {
-    Webhook = {
-        damage = "YOURWEBHOOKSHITDISCORDAPIWEBHOOK"
-    },
-    KickPlayer = false 
-}
-
-
-RegisterServerEvent('asd')
-AddEventHandler('asd', function(damage)
-    local playerId = source
-    LogDamage(playerId, damage)
-end)
-
-
 function LogDamage(playerId, damage)
     -- Get the player's identifiers
     local identifiers = GetPlayerIdentifiers(playerId)
-    local steamIdentifier, playerIP
-
+    local steamIdentifier, playerIP, discordIdentifier, xblIdentifier, license2Identifier
 
     for _, identifier in ipairs(identifiers) do
         if string.match(identifier, "steam") then
             steamIdentifier = identifier
         elseif string.match(identifier, "ip") then
             playerIP = identifier
+        elseif string.match(identifier, "license") then
+            licenseIdentifier = identifier
+        elseif string.match(identifier, "discord") then
+            discordIdentifier = identifier
+        elseif string.match(identifier, "xbl") then
+            xblIdentifier = identifier
+        elseif string.match(identifier, "license2") then
+            license2Identifier = identifier
         end
     end
 
-    local discordLogImage = "https://cdn.discordapp.com/attachments/873184959400149072/890646026044731412/dollar-black-poster.png"
+    local discordLogImage = "your discord images :)"
     local logInfo = {
         color = "66666", 
         author = {
-            name = "$ky Damage Logs!",
+            name = "Damage Logs!",
             icon_url = discordLogImage
         },
         type = "rich", 
         title = "Damage Logs", 
-        description = damage .. "\n **IP : **" .. playerIP .. "\n **SteamID: **" .. steamIdentifier ,
+        description = damage .. "\n **IP : **" .. playerIP .. "\n **SteamID: **" .. steamIdentifier .. "\n **DiscordID: **" .. discordIdentifier .. "\n **Xbox Live ID: **" .. xblIdentifier .. "\n **License2: **" .. license2Identifier,
         footer = { 
-            text = "$ky Damage Logs!!  |  " .. os.date("%m/%d/%Y") 
-
+            text = "Damage Logs!!  |  " .. os.date("%m/%d/%Y") 
         }
     }
 
