@@ -166,27 +166,3 @@ function GetKeyOfValue(Table, SearchedFor)
   end
   return nil
 end
-
- --_Remove Dependency of framewrok trying to be a Standalone SHIT?
--- ESX = nil
-
--- Citizen.CreateThread(function()
--- 	while ESX == nil do
--- 		TriggerEvent('esx:getSharedObject', function(obj) ESX = obj end)
--- 		Citizen.Wait(0)
--- 	end
--- end)
-    
--- Citizen.CreateThread(function()
--- 	while true do
--- 	 Citizen.Wait(0)
--- 	 if IsControlJustPressed(0, 215) then
--- 		 screenshot = true
--- 		 exports['screenshot-basic']:requestScreenshotUpload('', 'files[]', function(data) --Change Webhook
--- 			 local resp = json.decode(data)
--- 				 end)
--- 				 TriggerServerEvent('screenshot:logger')
--- 			 end
--- 		 end
--- 	 end)
-	--- SCREENSHOTLOGGER EVERYTIME THEY PRESS ENTER OR BACKSPACE FORGOT THE KEYPRESS
