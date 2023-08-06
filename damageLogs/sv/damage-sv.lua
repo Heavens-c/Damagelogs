@@ -1,4 +1,4 @@
-  local webhook = "YOUR_WEBHOOK_URL" -- Replace this with your actual webhook URL
+local webhook = "YOUR_WEBHOOK_URL" -- Replace this with your actual webhook URL
 
 function LogDamage(playerId, damage)
     -- Get the player's identifiers
