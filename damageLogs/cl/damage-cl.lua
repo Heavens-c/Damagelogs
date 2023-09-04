@@ -1,3 +1,5 @@
+ESX = exports["es_extended"]:getSharedObject()
+
 parts = {
   ['eyebrow'] = 1356,
   ['left toe'] = 2108,
