@@ -15,3 +15,6 @@ my road map on this to add a Who Player Fire a Gun  and connect to  damage logs!
 
 
 if you have an idea or improve this help me out create A PR   
+
+
+ill archieve this maybe ill be back once i finish make an cool release :D 
