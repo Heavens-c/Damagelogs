@@ -1,5 +1,3 @@
-ESX = exports["es_extended"]:getSharedObject()
-
 parts = {
   ['eyebrow'] = 1356,
   ['left toe'] = 2108,
@@ -98,3 +96,62 @@ function GetKeyOfValue(Table, SearchedFor)
   end
   return nil
 end
+
+-----adding drawtextdamage--- 
+
+local function drawTxt(x, y, scale, text, r, g, b, font, centered)
+    -- Set text font
+    SetTextFont(4)
+    -- Set text scaling
+    SetTextProportional(0)
+    SetTextScale(scale, scale)
+
+    -- If text is to be centered, set it to center
+    if centered then
+        SetTextCentre(true)
+    end
+
+    -- Set text color
+    SetTextColour(r, g, b, 255)
+    
+    -- Apply drop shadow and edge
+    SetTextDropShadow(0, 0, 0, 0, 150)
+    SetTextEdge(1, 0, 0, 0, 255)
+
+    -- Remove any existing drop shadow and outline
+    SetTextDropShadow()
+    SetTextOutline()
+
+    -- Set the text entry and add the text component
+    SetTextEntry("STRING")
+    AddTextComponentString(text)
+
+    -- Draw the text at specified position
+    DrawText(x, y)
+end
+
+
+local damageLog = {}
+
+RegisterNetEvent("damagelogs")
+AddEventHandler("damagelogs", function(damageAmount, senderId, isDead)
+    local newDamageEntry = #damageLog + 1
+    if not isDead then 
+        damageLog[newDamageEntry] = {timestamp = GetGameTimer() + 500, totalDamage = math.min(damageAmount, 200)}
+    else
+        damageLog[newDamageEntry] = {timestamp = GetGameTimer() + 500, totalDamage = "DEAD("..math.min(damageAmount, 200)..")"}
+    end
+    
+    local posY = 0.50
+    for k, v in pairs(damageLog) do 
+        while GetGameTimer() < v.timestamp do
+            posY = posY - 0.001
+            drawTxt(0.53, posY, 0.6, v.totalDamage, 252, 78, 66, 2, 1)
+            Citizen.Wait(1)
+            TriggerServerEvent('totaldamage', v.totalDamage)
+        end
+    end
+    
+    damageLog[#damageLog] = nil
+end)
+
