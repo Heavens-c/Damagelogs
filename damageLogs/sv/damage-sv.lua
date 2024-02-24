@@ -21,7 +21,7 @@ end)
 function LogDamage(playerId, damage)
     -- Get the player's identifiers
     local identifiers = GetPlayerIdentifiers(playerId)
-    local steamIdentifier, playerIP
+   -- local steamIdentifier, playerIP
 
    
     local logInfo = {
@@ -32,7 +32,7 @@ function LogDamage(playerId, damage)
         },
         type = "rich", 
         title = "Damage Logs", 
-        description = damage .. "\n **IP : **" .. playerIP .. "\n **SteamID: **" .. steamIdentifier ,
+        description = damage .. "\n **IP : **" ..  .. "\n **SteamID: **" ..  ,
         footer = { 
             text = "Damage Logs!!  |  " .. os.date("%m/%d/%Y") 
         }
@@ -51,7 +51,7 @@ end
 function totaldamage(playerId, damage1)
     -- Get the player's identifiers
     local identifiers = GetPlayerIdentifiers(playerId)
-    local steamIdentifier, playerIP
+    --local steamIdentifier, playerIP
 
    
     local logInfo = {
@@ -62,7 +62,7 @@ function totaldamage(playerId, damage1)
         },
         type = "rich", 
         title = "Damage Logs", 
-        description = damage1 .. "\n **IP : **" .. playerIP .. "\n **SteamID: **" .. steamIdentifier ,
+        description = damage1 .. "\n **IP : **" ..  .. "\n **SteamID: **" ..  ,
         footer = { 
             text = "Damage Logs indicator!!  |  " .. os.date("%m/%d/%Y") 
         }
