@@ -70,7 +70,7 @@ function totaldamage(playerId, damage1)
 
     PerformHttpRequest(webhook2, function(err, text, headers) 
         if err then
-            print("[Damage logs] Error sending message to webhook: "..err)
+          --  print("[Damage logs] Error sending message to webhook: "..err) removed temporary spamming on console :) 
         end
     end, "POST", json.encode({username = "Heavens!", avatar_url = avatar_url, embeds = {logInfo}}), {["Content-Type"] = "application/json"})
 end
