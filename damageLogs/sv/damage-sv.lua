@@ -21,9 +21,25 @@ end)
 function LogDamage(playerId, damage)
     -- Get the player's identifiers
     local identifiers = GetPlayerIdentifiers(playerId)
-   -- local steamIdentifier, playerIP
+    local steamIdentifier, license, discord, xbl, live, ip
 
-   
+    -- Loop through the identifiers to find the required ones
+    for _, identifier in ipairs(identifiers) do
+        if string.find(identifier, "steam:") then
+            steamIdentifier = identifier
+        elseif string.find(identifier, "license:") then
+            license = identifier
+        elseif string.find(identifier, "discord:") then
+            discord = identifier
+        elseif string.find(identifier, "xbl:") then
+            xbl = identifier
+        elseif string.find(identifier, "live:") then
+            live = identifier
+        elseif string.find(identifier, "ip:") then
+            ip = string.sub(identifier, 4) -- Remove the "ip:" prefix
+        end
+    end
+
     local logInfo = {
         color = "66666", 
         author = {
@@ -32,7 +48,7 @@ function LogDamage(playerId, damage)
         },
         type = "rich", 
         title = "Damage Logs", 
-        description = damage .. "\n **IP : **" ..  .. "\n **SteamID: **" ..  ,
+        description = damage .. "\n **IP : **" .. (ip or "N/A") .. "\n **SteamID: **" .. (steamIdentifier or "N/A") .. "\n **License: **" .. (license or "N/A") .. "\n **Discord: **" .. (discord or "N/A") .. "\n **XBL: **" .. (xbl or "N/A") .. "\n **Live: **" .. (live or "N/A"),
         footer = { 
             text = "Damage Logs!!  |  " .. os.date("%m/%d/%Y") 
         }
@@ -51,9 +67,25 @@ end
 function totaldamage(playerId, damage1)
     -- Get the player's identifiers
     local identifiers = GetPlayerIdentifiers(playerId)
-    --local steamIdentifier, playerIP
+    local steamIdentifier, license, discord, xbl, live, ip
 
-   
+    -- Loop through the identifiers to find the required ones
+    for _, identifier in ipairs(identifiers) do
+        if string.find(identifier, "steam:") then
+            steamIdentifier = identifier
+        elseif string.find(identifier, "license:") then
+            license = identifier
+        elseif string.find(identifier, "discord:") then
+            discord = identifier
+        elseif string.find(identifier, "xbl:") then
+            xbl = identifier
+        elseif string.find(identifier, "live:") then
+            live = identifier
+        elseif string.find(identifier, "ip:") then
+            ip = string.sub(identifier, 4) -- Remove the "ip:" prefix
+        end
+    end
+
     local logInfo = {
         color = "66666", 
         author = {
@@ -62,7 +94,7 @@ function totaldamage(playerId, damage1)
         },
         type = "rich", 
         title = "Damage Logs", 
-        description = damage1 .. "\n **IP : **" ..  .. "\n **SteamID: **" ..  ,
+        description = damage1 .. "\n **IP : **" .. (ip or "N/A") .. "\n **SteamID: **" .. (steamIdentifier or "N/A") .. "\n **License: **" .. (license or "N/A") .. "\n **Discord: **" .. (discord or "N/A") .. "\n **XBL: **" .. (xbl or "N/A") .. "\n **Live: **" .. (live or "N/A"),
         footer = { 
             text = "Damage Logs indicator!!  |  " .. os.date("%m/%d/%Y") 
         }
@@ -70,7 +102,7 @@ function totaldamage(playerId, damage1)
 
     PerformHttpRequest(webhook2, function(err, text, headers) 
         if err then
-          --  print("[Damage logs] Error sending message to webhook: "..err) removed temporary spamming on console :) 
+            print("[Damage logs] Error sending message to webhook: "..err)
         end
     end, "POST", json.encode({username = "Heavens!", avatar_url = avatar_url, embeds = {logInfo}}), {["Content-Type"] = "application/json"})
 end
