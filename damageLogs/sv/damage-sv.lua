@@ -1,103 +1,86 @@
-local DAMAGE_WEBHOOK = "Webhook"         -- Webhook URL for Damage Logs
-local TOTAL_DAMAGE_WEBHOOK = "Webhook"     -- Webhook URL for Total Damage Logs
+local DAMAGE_WEBHOOK = "YOUR_WEBHOOK_HERE"
+local TOTAL_DAMAGE_WEBHOOK = "YOUR_WEBHOOK_HERE"
 local DISCORD_LOG_IMAGE = "https://cdn.discordapp.com/attachments/873184959400149072/890646026044731412/dollar-black-poster.png"
 
--- Extract identifiers from a player
-local function extractIdentifiers(playerId)
-    local identifiers = GetPlayerIdentifiers(playerId)
-    local identifierData = {
-        steam   = "N/A",
-        license = "N/A",
-        discord = "N/A",
-        xbl     = "N/A",
-        live    = "N/A",
-        ip      = "N/A"
-    }
+-- Cache to store identifiers so we don't fetch them every single hit
+local playerCache = {}
 
-    for _, identifier in ipairs(identifiers) do
-        if identifier:find("steam:") then
-            identifierData.steam = identifier
-        elseif identifier:find("license:") then
-            identifierData.license = identifier
-        elseif identifier:find("discord:") then
-            identifierData.discord = identifier
-        elseif identifier:find("xbl:") then
-            identifierData.xbl = identifier
-        elseif identifier:find("live:") then
-            identifierData.live = identifier
-        elseif identifier:find("ip:") then
-            identifierData.ip = identifier:sub(4)  -- Remove the "ip:" prefix
-        end
+-----------------------------------------
+-- Helper Functions
+-----------------------------------------
+
+local function getCachedIdentifiers(playerId)
+    if playerCache[playerId] then return playerCache[playerId] end
+
+    local ids = GetPlayerIdentifiers(playerId)
+    local data = { steam = "N/A", license = "N/A", discord = "N/A", ip = "N/A" }
+
+    for _, id in ipairs(ids) do
+        if id:find("steam:") then data.steam = id
+        elseif id:find("license:") then data.license = id
+        elseif id:find("discord:") then data.discord = id:gsub("discord:", "")
+        elseif id:find("ip:") then data.ip = id:sub(4) end
     end
 
-    return identifierData
+    playerCache[playerId] = data
+    return data
 end
 
--- Create a Discord embed object for the log
-local function createLogEmbed(title, description)
-    return {
-        color = 66666,  -- Discord expects a number for the color value
-        author = {
-            name = "Damage Logs!",
-            icon_url = DISCORD_LOG_IMAGE
-        },
-        type = "rich",
-        title = title,
-        description = description,
-        footer = {
-            text = "Damage Logs!!  |  " .. os.date("%m/%d/%Y")
-        }
-    }
+local function sendToDiscord(webhook, title, description)
+    local payload = json.encode({
+        username = "Heavens Logs",
+        embeds = {{
+            title = title,
+            description = description,
+            color = 16711680, -- Red color
+            author = { name = "Damage System", icon_url = DISCORD_LOG_IMAGE },
+            footer = { text = "Logged at " .. os.date("%Y-%m-%d %H:%M:%S") }
+        }}
+    })
+
+    PerformHttpRequest(webhook, function(err, text, headers) end, 'POST', payload, { ['Content-Type'] = 'application/json' })
 end
 
--- Send the embed to the specified webhook URL
-local function sendWebhook(webhookUrl, logEmbed)
-    local payload = {
-        username = "Heavens!",
-        avatar_url = "",  -- Set an avatar URL if needed
-        embeds = { logEmbed }
-    }
-    PerformHttpRequest(webhookUrl, function(err, text, headers)
-        if err then
-            print("[Damage logs] Error sending message to webhook: " .. err)
-        end
-    end, "POST", json.encode(payload), { ["Content-Type"] = "application/json" })
-end
+-----------------------------------------
+-- Event Handlers
+-----------------------------------------
 
--- Common function to log a damage event
-local function logDamageEvent(playerId, damage, title, webhookUrl)
-    local identifiers = extractIdentifiers(playerId)
-    local description = string.format(
-        "%s\n **IP:** %s\n **SteamID:** %s\n **License:** %s\n **Discord:** %s\n **XBL:** %s\n **Live:** %s",
-        tostring(damage),
-        identifiers.ip,
-        identifiers.steam,
-        identifiers.license,
-        identifiers.discord,
-        identifiers.xbl,
-        identifiers.live
+-- Clean up cache when player leaves
+AddEventHandler('playerDropped', function()
+    playerCache[source] = nil
+end)
+
+-- Main Damage Logging Event
+RegisterNetEvent('damagebone', function(message)
+    local src = source
+    local ids = getCachedIdentifiers(src)
+    
+    local logString = string.format(
+        "**Action:** %s\n**Player:** %s (%s)\n**Discord:** <@%s>\n**IP:** %s\n**License:** %s",
+        message, GetPlayerName(src), src, ids.discord, ids.ip, ids.license
     )
-    local logEmbed = createLogEmbed(title, description)
-    sendWebhook(webhookUrl, logEmbed)
-end
-
--- Event listener for damagebone event
-RegisterServerEvent('damagebone')
-AddEventHandler('damagebone', function(damage)
-    local playerId = source
-    logDamageEvent(playerId, damage, "Damage Logs", DAMAGE_WEBHOOK)
+    
+    sendToDiscord(DAMAGE_WEBHOOK, "🎯 Bone Damage Log", logString)
 end)
 
--- Event listener for totaldamage event
-RegisterServerEvent('totaldamage')
-AddEventHandler('totaldamage', function(damage)
-    local playerId = source
-    logDamageEvent(playerId, damage, "Total Damage Logs", TOTAL_DAMAGE_WEBHOOK)
+-- Total Damage Logging Event
+RegisterNetEvent('totaldamage', function(damage)
+    local src = source
+    local ids = getCachedIdentifiers(src)
+    
+    local logString = string.format(
+        "**Total Damage:** %s\n**Player:** %s (%s)\n**Discord:** <@%s>",
+        tostring(damage), GetPlayerName(src), src, ids.discord
+    )
+    
+    sendToDiscord(TOTAL_DAMAGE_WEBHOOK, "📊 Total Damage Log", logString)
 end)
 
--- Listen for weapon damage event and trigger a client event
+-- Built-in FiveM Weapon Damage Event
 AddEventHandler('weaponDamageEvent', function(sender, data)
-    local damage = data.weaponDamage
-    local isKill = data.willKill
-    TriggerClientEvent('damagelogs', sender, damage, sender, isKill)
+    -- This event is high-frequency, so we only trigger client logs here
+    -- to let the client-side throttling handle the heavy lifting.
+    if data.weaponDamage > 0 then
+        TriggerClientEvent('damagelogs', sender, data.weaponDamage, sender, data.willKill)
+    end
 end)
