@@ -2,20 +2,20 @@
 -- Bone IDs mapping
 -----------------------------------------
 local boneIds = {
-    ['eyebrow'] = 1356, ['left toe'] = 2108, ['right elbow'] = 2992, ['left arm'] = 5232, 
-    ['right hand'] = 6286, ['right thigh'] = 6442, ['right collarbone'] = 10706, 
-    ['right corner of the mouth'] = 11174, ['sinks'] = 11816, ['head'] = 12844, 
-    ['left foot'] = 14201, ['right knee'] = 16335, ['lower lip'] = 17188, ['lip'] = 17719, 
-    ['left hand'] = 18905, ['right cheekbone'] = 19336, ['right toe'] = 20781, 
-    ['nerve of the lower lip'] = 20279, ['left cheekbone'] = 21550, ['left elbow'] = 22711, 
-    ['spinal root'] = 23553, ['left thigh'] = 23639, ['right foot'] = 24806, 
-    ['lower part of the spine'] = 24816, ['the middle part of the spine'] = 24817, 
-    ['the upper part of the spine'] = 24818, ['left eye'] = 25260, ['right eye'] = 27474, 
-    ['right arm'] = 28252, ['left corner of the mouth'] = 29868, ['neck'] = 35731, 
-    ['right calf'] = 36864, ['right forearm'] = 43810, ['left shoulder'] = 45509, 
-    ['left knee'] = 46078, ['jaw'] = 46240, ['tongue'] = 47495, ['nerve of the upper lip'] = 49979, 
-    ['right thigh'] = 51826, ['root'] = 56604, ['spine'] = 57597, ['left foot bone'] = 57717, 
-    ['left eyebrow'] = 58331, ['left hand bone'] = 60309, ['left forearm'] = 61163, 
+    ['eyebrow'] = 1356, ['left toe'] = 2108, ['right elbow'] = 2992, ['left arm'] = 5232,
+    ['right hand'] = 6286, ['right thigh'] = 6442, ['right collarbone'] = 10706,
+    ['right corner of the mouth'] = 11174, ['sinks'] = 11816, ['head'] = 12844,
+    ['left foot'] = 14201, ['right knee'] = 16335, ['lower lip'] = 17188, ['lip'] = 17719,
+    ['left hand'] = 18905, ['right cheekbone'] = 19336, ['right toe'] = 20781,
+    ['nerve of the lower lip'] = 20279, ['left cheekbone'] = 21550, ['left elbow'] = 22711,
+    ['spinal root'] = 23553, ['left thigh'] = 23639, ['right foot'] = 24806,
+    ['lower part of the spine'] = 24816, ['the middle part of the spine'] = 24817,
+    ['the upper part of the spine'] = 24818, ['left eye'] = 25260, ['right eye'] = 27474,
+    ['right arm'] = 28252, ['left corner of the mouth'] = 29868, ['neck'] = 35731,
+    ['right calf'] = 36864, ['right forearm'] = 43810, ['left shoulder'] = 45509,
+    ['left knee'] = 46078, ['jaw'] = 46240, ['tongue'] = 47495, ['nerve of the upper lip'] = 49979,
+    ['right thigh'] = 51826, ['root'] = 56604, ['spine'] = 57597, ['left foot bone'] = 57717,
+    ['left eyebrow'] = 58331, ['left hand bone'] = 60309, ['left forearm'] = 61163,
     ['upper lip'] = 61839, ['left calf'] = 63931, ['left collarbone'] = 64729, ['face'] = 65068
 }
 
@@ -69,20 +69,20 @@ Citizen.CreateThread(function()
 
         -- Only trigger if bone is found AND it's a new bone or enough time has passed
         if foundBone and (currentBoneId ~= lastDamagedBoneId or (currentTime - lastEventTime) > NETWORK_COOLDOWN) then
-            
+
             -- Prevent Network Overflow (Rate Limiting)
             if (currentTime - lastEventTime) > NETWORK_COOLDOWN then
                 local boneName = getBoneNameById(currentBoneId)
                 local remainingHP = math.max(0, GetEntityHealth(playerPed) - 100)
                 local remainingArmor = GetPedArmour(playerPed)
-                
+
                 local message = string.format(
                     "%s | Bone: %s | HP: %d | Armor: %d",
                     GetPlayerName(PlayerId()), boneName, remainingHP, remainingArmor
                 )
 
                 TriggerServerEvent('damagebone', message)
-                
+
                 lastDamagedBoneId = currentBoneId
                 lastEventTime = currentTime
                 ClearPedLastDamageBone(playerPed) -- Reset bone state after logging
@@ -115,20 +115,26 @@ end)
 -----------------------------------------
 -- Event Handlers
 -----------------------------------------
+local lastTotalDamageTime = 0
+
 RegisterNetEvent("damagelogs")
 AddEventHandler("damagelogs", function(damageAmount, senderId, isDead)
     local displayedDamage = isDead and "DEAD" or tostring(math.floor(damageAmount))
-    
+
     -- Limit damage logs table size
     if #damageLogs >= MAX_DAMAGE_LOGS then
         table.remove(damageLogs, 1)
     end
-    
-    table.insert(damageLogs, { 
+
+    table.insert(damageLogs, {
         timestamp = GetGameTimer() + 3000, -- Show for 3 seconds
-        totalDamage = displayedDamage 
+        totalDamage = displayedDamage
     })
 
     -- Throttled Server Log
-    TriggerServerEvent('totaldamage', displayedDamage)
+    local currentTime = GetGameTimer()
+    if (currentTime - lastTotalDamageTime) > NETWORK_COOLDOWN then
+        TriggerServerEvent('totaldamage', displayedDamage)
+        lastTotalDamageTime = currentTime
+    end
 end)
